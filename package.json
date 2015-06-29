@@ -1,13 +1,20 @@
 {
-	"name": "NodejsStarterApp",
+	"name": "PersonalityInsights-Twitter-Basic",
 	"version": "0.0.1",
-	"description": "A sample nodejs app for Bluemix",
+	"description": "A basic node app that analyzes a stream of treats for a user with Watson Personaltiy Insights",
 	"scripts": {
 		"start": "node app.js"
 	},
 	"dependencies": {
 		"express": "4.12.x",
-		"cfenv": "1.0.x"
+		"cfenv": "1.0.x",
+		"body-parser": "~1.13.1",
+		"cookie-parser": "*",
+		"watson-developer-cloud": "~0.9.11",
+		"twit":"*"
 	},
+	"engines": {
+		"node": "0.10.32"
+		},
 	"repository": {}
 }

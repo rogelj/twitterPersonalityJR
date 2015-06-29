@@ -1,22 +1,98 @@
 /*jshint node:true*/
-
 //------------------------------------------------------------------------------
 // node.js starter application for Bluemix
 //------------------------------------------------------------------------------
-
-// This application uses express as it's web server
-// for more info, see: http://expressjs.com
+// Module Dependencies
 var express = require('express');
-
-// cfenv provides access to your Cloud Foundry environment
-// for more info, see: https://www.npmjs.com/package/cfenv
 var cfenv = require('cfenv');
+var Twit = require('twit');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var watson = require('watson-developer-cloud');
 
-// create a new express server
+// Create a new Express server
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(cookieParser());
 
-// serve the files out of ./public as our main files
+// Serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
+app.get('/', function(req, res) {
+
+    res.sendFile('index.html');
+
+});
+
+// Connection variables
+var tweet = new Twit({
+    consumer_key: 'OWLXcXHLFWQ5aYfkDtsxzjvzt',
+    consumer_secret: 'IwUwLMHaHw7jSEHvXh5pE3UkgsbzdNwyJ156sCFL2zoqzfUpZP',
+    access_token: '989656094-GjJAAZRZTGDdWYkWMUG4JdXGmLmbyQi0bSeWPd6a',
+    access_token_secret: 'DyFG3RQ4R2dYEmdIzT1TYm2ZfGdDUjHz5j9g5VGAYffTK'
+});
+
+var personalityInsights = new watson.personality_insights({
+    url: 'https://gateway.watsonplatform.net/personality-insights/api',
+    username: '69a3cb47-a917-4da4-ac4f-904102ebb727',
+    password: 'hDLZnA9QGFu',
+    version: 'v2'
+});
+
+// Ajax post for Twitter and Watson
+app.post('/tweetInsights', function(req, res) {
+    var username = req.body.id;
+
+    console.log("Got request for tweets");
+    console.log("Handle to query is: " + username);
+
+    var options = {
+        screen_name: username,
+        count: 200
+    };
+    var tweets = [];
+
+    // Send a get to the Twitter API to retrieve a specifice user's timeline
+    tweet.get('statuses/user_timeline', options, function(err, data) {
+
+        if (err) {
+            console.log(err);
+        }
+
+        // Loop through and add tweets to an array
+        for (var i = 0; i < data.length; i++) {
+            tweets.push(data[i].text);
+        }
+
+        console.log("Returning tweets");
+        var insightsData = tweets.join(' ');
+
+        console.log("Request received for Personality Insights...");
+
+        personalityInsights.profile({
+            text: insightsData
+        }, function(err, profile) {
+            if (err) {
+                console.log('error:', err);
+            } else {
+                console.log(JSON.stringify(profile, null, 2));
+                console.log(tweets);
+                return res.json({
+                    t: tweets,
+                    p: profile
+                });
+            }
+
+        }); // End personalityinsights.profile	
+
+    }); // End tweet.get   
+
+
+}); // End app.post
+
+
 
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
@@ -24,6 +100,6 @@ var appEnv = cfenv.getAppEnv();
 // start server on the specified port and binding host
 app.listen(appEnv.port, appEnv.bind, function() {
 
-	// print a message when the server starts listening
-  console.log("server starting on " + appEnv.url);
+    // print a message when the server starts listening
+    console.log("server starting on " + appEnv.url + " port: " + appEnv.port);
 });
