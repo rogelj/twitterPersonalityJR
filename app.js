@@ -28,16 +28,16 @@ app.get('/', function(req, res) {
 
 // Connection variables
 var tweet = new Twit({
-    consumer_key: 'OWLXcXHLFWQ5aYfkDtsxzjvzt',
-    consumer_secret: 'IwUwLMHaHw7jSEHvXh5pE3UkgsbzdNwyJ156sCFL2zoqzfUpZP',
-    access_token: '989656094-GjJAAZRZTGDdWYkWMUG4JdXGmLmbyQi0bSeWPd6a',
-    access_token_secret: 'DyFG3RQ4R2dYEmdIzT1TYm2ZfGdDUjHz5j9g5VGAYffTK'
+    consumer_key: 'YOUR_CONSUMER_KEY',
+    consumer_secret: 'YOUR_CONSUMER_SECRET',
+    access_token: 'YOUR_ACCESS_TOKEN',
+    access_token_secret: 'YOUR_ACCESS_SECRET'
 });
 
 var personalityInsights = new watson.personality_insights({
-    url: 'https://gateway.watsonplatform.net/personality-insights/api',
-    username: '69a3cb47-a917-4da4-ac4f-904102ebb727',
-    password: 'hDLZnA9QGFu',
+    url: 'YOUR_WATSON_URL',
+    username: 'YOUR_WATSON_USERNAME',
+    password: 'YOUR_WATSON_PASSWORD',
     version: 'v2'
 });
 
