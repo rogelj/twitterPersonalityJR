@@ -1,14 +1,15 @@
+/*eslint-env node */
 /*jshint node:true*/
 //------------------------------------------------------------------------------
 // node.js starter application for Bluemix
 //------------------------------------------------------------------------------
 // Module Dependencies
-var express = require('express');
-var cfenv = require('cfenv');
-var Twit = require('twit');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var watson = require('watson-developer-cloud');
+var express = require("express");
+var cfenv = require("cfenv");
+var Twit = require("twit");
+var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
+var watson = require("watson-developer-cloud");
 
 // Create a new Express server
 var app = express();
@@ -19,55 +20,85 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 // Serve the files out of ./public as our main files
-app.use(express.static(__dirname + '/public'));
-app.get('/', function(req, res) {
+app.use(express.static(__dirname + "/public"));
+app.get("/", function(req, res) {
 
-    res.sendFile('index.html');
+    res.sendFile("index.html");
 
 });
 
 // Connection variables
 var tweet = new Twit({
-    consumer_key: 'YOUR_CONSUMER_KEY',
-    consumer_secret: 'YOUR_CONSUMER_SECRET',
-    access_token: 'YOUR_ACCESS_TOKEN',
-    access_token_secret: 'YOUR_ACCESS_SECRET'
+    consumer_key: "AYkHXTszKWnsa4sf5rCNQ",
+    consumer_secret: "rBkSiJbCPVgCn292xw9ybiLMhAqZt9zbSu7dweE25vw",
+    access_token: "1847244530-J0BqcqQuFhdbCjM7LljgMlyZNovKxPxW3Tcqapb",
+    access_token_secret: "1f5xpsdpmcljPGX8Z6WvnC6pZVwtArHVa3MSb5zlc"
 });
 
 var personalityInsights = new watson.personality_insights({
-    url: 'YOUR_WATSON_URL',
-    username: 'YOUR_WATSON_USERNAME',
-    password: 'YOUR_WATSON_PASSWORD',
-    version: 'v2'
+    url: "YOUR_WATSON_URL",
+    username: "YOUR_WATSON_USERNAME",
+    password: "YOUR_WATSON_PASSWORD",
+    version: "v2"
 });
 
 // Ajax post for Twitter and Watson
-app.post('/tweetInsights', function(req, res) {
-    var username = req.body.id;
+app.post("/tweetInsights", function(req, res) {
+    var query = req.body.id;
+    var options;
+    var tpath;
+    var tpush;
+
 
     console.log("Got request for tweets");
-    console.log("Handle to query is: " + username);
+  //  console.log("Handle to query is: " + username);
 
-    var options = {
-        screen_name: username,
-        count: 200
-    };
+  if(query.charAt(0)==="@"){
+  	console.log("Handle to query is: " + query);
+
+  	options = {
+  		screen_name: query,
+  		count: 200,
+  		include_rts: false
+  	};
+
+  	tpath = "statuses/user_timeline";
+  }
+  else {
+  	console.log("Term to query is: " + query);
+
+  	options = {
+  		q: query,
+  		lang: "en",
+  		count: 300,
+  	};
+
+  	tpath = "search/tweets";
+  }
+
     var tweets = [];
 
     // Send a get to the Twitter API to retrieve a specifice user's timeline
-    tweet.get('statuses/user_timeline', options, function(err, data) {
+    tweet.get(tpath, options, function(err, data) {
 
         if (err) {
             console.log(err);
         }
 
-        // Loop through and add tweets to an array
-        for (var i = 0; i < data.length; i++) {
-            tweets.push(data[i].text);
+        if (query.charAt(0)==="@") {
+        	// Loop through and add tweets to an array
+        	for (var i = 0; i < data.length; i++) {
+        		tweets.push(data[i].text);
+        	}
+        } else {
+        	// Loop through and add tweets to an array
+        	for (var i = 0; i < data.statuses.length; i++) {
+        		tweets.push(data.statuses[i].text);
+        	}
         }
 
         console.log("Returning tweets");
-        var insightsData = tweets.join(' ');
+        var insightsData = tweets.join(" ");
 
         console.log("Request received for Personality Insights...");
 
@@ -75,7 +106,7 @@ app.post('/tweetInsights', function(req, res) {
             text: insightsData
         }, function(err, profile) {
             if (err) {
-                console.log('error:', err);
+                console.log("error:", err);
             } else {
                 console.log(JSON.stringify(profile, null, 2));
                 console.log(tweets);
@@ -85,9 +116,9 @@ app.post('/tweetInsights', function(req, res) {
                 });
             }
 
-        }); // End personalityinsights.profile	
+        }); // End personalityinsights.profile
 
-    }); // End tweet.get   
+    }); // End tweet.get
 
 
 }); // End app.post

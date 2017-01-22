@@ -1,7 +1,7 @@
 applications:
 - disk_quota: 1024M
-  host: personalityinsights-twitter-basic
-  name: personalityinsights-twitter-basic
+  host: twitterPersonalityJR
+  name: twitterPersonalityJR
   path: .
   domain: mybluemix.net
   instances: 1
