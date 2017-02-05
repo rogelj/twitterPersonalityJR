@@ -29,10 +29,10 @@ app.get("/", function(req, res) {
 
 // Connection variables
 var tweet = new Twit({
-    consumer_key: "AYkHXTszKWnsa4sf5rCNQ",
-    consumer_secret: "rBkSiJbCPVgCn292xw9ybiLMhAqZt9zbSu7dweE25vw",
-    access_token: "1847244530-J0BqcqQuFhdbCjM7LljgMlyZNovKxPxW3Tcqapb",
-    access_token_secret: "1f5xpsdpmcljPGX8Z6WvnC6pZVwtArHVa3MSb5zlc"
+    consumer_key: "",
+    consumer_secret: "",
+    access_token: "b",
+    access_token_secret: ""
 });
 
 var personalityInsights = new watson.personality_insights({
